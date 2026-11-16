@@ -73,18 +73,23 @@ class PacketTest {
 
     @Test
     void testPacketUnpackMultiple() {
-        // 测试解包单个数据包（简化测试）
-        // 多包解包的功能由实际使用验证
-        Packet packet1 = new Packet(Packet.Operation.HEARTBEAT, "test message".getBytes());
-        
-        ByteBuffer packed = packet1.pack();
-        
-        List<Packet> packets = Packet.unPack(packed);
-        
-        assertNotNull(packets);
-        assertTrue(packets.size() >= 1);
-        assertEquals(Packet.Operation.HEARTBEAT, packets.get(0).operation);
-        assertArrayEquals("test message".getBytes(), packets.get(0).body);
+        // 同一帧里拼接多个包，第二个包必须解析出自己的 operation
+        Packet packet1 = new Packet(Packet.Operation.HEARTBEAT_REPLY, new byte[]{1, 2, 3});
+        Packet packet2 = new Packet(Packet.Operation.SEND_SMS_REPLY, "{\"cmd\":\"X\"}".getBytes());
+
+        ByteBuffer packed1 = packet1.pack();
+        ByteBuffer packed2 = packet2.pack();
+        ByteBuffer both = ByteBuffer.allocate(packed1.limit() + packed2.limit());
+        both.put(packed1).put(packed2);
+        both.position(0);
+
+        List<Packet> packets = Packet.unPack(both);
+
+        assertEquals(2, packets.size());
+        assertEquals(Packet.Operation.HEARTBEAT_REPLY, packets.get(0).operation);
+        assertEquals(Packet.Operation.SEND_SMS_REPLY, packets.get(1).operation);
+        assertArrayEquals(packet1.body, packets.get(0).body);
+        assertArrayEquals(packet2.body, packets.get(1).body);
     }
 
     @Test

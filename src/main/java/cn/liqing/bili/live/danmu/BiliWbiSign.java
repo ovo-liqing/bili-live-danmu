@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -68,9 +69,12 @@ public class BiliWbiSign {
     }
 
     public static Map<String, String> getWbiKeys() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))
+                .build();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.bilibili.com/x/web-interface/nav"))
+                .timeout(Duration.ofSeconds(5))
                 .GET()
                 .build();
 

@@ -9,7 +9,6 @@ import com.google.gson.JsonElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class EomjiHandler implements MessageHandler {
@@ -22,12 +21,8 @@ public class EomjiHandler implements MessageHandler {
 
     @Override
     public boolean canHandle(Message message) {
-        if (!Objects.equals(message.cmd, "DANMU_MSG"))
-            return false;
-        if (message.info == null)
-            return false;
-        JsonArray info = message.info.getAsJsonArray();
-        return info.get(0).getAsJsonArray().get(12).getAsInt() == 1;
+        Integer type = DanmuMsgType.resolve(message);
+        return type != null && type == DanmuMsgType.EMOJI;
     }
 
     @Override

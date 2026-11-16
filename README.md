@@ -10,13 +10,14 @@
 
 #### 方法
 
-- `connect()`: 连接到直播间。
-- `disconnect()`: 断开与直播间的连接。
+- `connect(Auth auth)`: 连接到直播间。默认使用 `getDanmuInfo` 返回的弹幕服务器列表中的节点。
+- `disconnect()`: 断开与直播间的连接，并停止自动重连。
 - `isOpen()`: 检查是否已经连接。
+- `setAutoReconnect(boolean autoReconnect)`: 设置断线后是否自动重连（默认开启，按 1/2/4/8/16/30 秒退避，每次重连前刷新 token）。
 - `setListener(ConnectionListener listener)`: 设置连接状态监听器。
 - `addHandler(MessageHandler handler)`: 添加消息处理器。
 - `removeHandler(MessageHandler handler)`: 移除消息处理器。
-- `send(String message)`: 发送消息到直播间。
+- `send(String cookie, String roomId, String message)`: 发送消息到直播间。
 
 ## 主要用途
 

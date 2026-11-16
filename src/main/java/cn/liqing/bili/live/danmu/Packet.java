@@ -55,7 +55,7 @@ public class Packet {
             int bodyLen = buffer.getInt(offset) - HEADER_LENGTH;
             try {
                 short ver = buffer.getShort(offset + 6);
-                Operation op = Operation.parse(buffer.getInt(8));
+                Operation op = Operation.parse(buffer.getInt(offset + 8));
                 byte[] body = new byte[bodyLen];
                 buffer.get(offset + HEADER_LENGTH, body, 0, bodyLen);
 

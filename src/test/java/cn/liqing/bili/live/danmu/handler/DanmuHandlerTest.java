@@ -99,6 +99,26 @@ class DanmuHandlerTest {
     }
 
     @Test
+    void testCanHandleCmdWithSuffix() {
+        // B 站会推送 "DANMU_MSG:4:0:2:2:2:2" 这类带后缀的 cmd
+        String json = "{\"cmd\":\"DANMU_MSG:4:0:2:2:2:2\",\"info\":[[0,1,25,16777215,1234567890,1234567890,0,\"abc\",0,0,0,\"\",0],\"测试弹幕\",[123456,\"用户名\",0,0,0,10000,1],[],0,0,1,0,0,\"\"]}";
+
+        Message message = gson.fromJson(json, Message.class);
+
+        assertTrue(handler.canHandle(message));
+    }
+
+    @Test
+    void testCanHandleMalformedInfo() {
+        // info 结构不符合预期时不应抛出异常
+        String json = "{\"cmd\":\"DANMU_MSG\",\"info\":[[0,1]]}";
+
+        Message message = gson.fromJson(json, Message.class);
+
+        assertFalse(handler.canHandle(message));
+    }
+
+    @Test
     void testCannotHandleEmojiDanmu() {
         // 测试不处理表情弹幕（info[0][12] == 1）
         String json = "{\"cmd\":\"DANMU_MSG\",\"info\":[[0,1,25,16777215,1234567890,1234567890,0,\"abc\",0,0,0,\"\",1],\"表情\",[456,\"用户\",0,0,0,10000,1],[],0,0,1,0,0,\"\"]}";

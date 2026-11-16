@@ -49,8 +49,17 @@ class AuthTest {
     }
 
     @Test
-    void testAuthFieldsArePublic() {
-        // 验证所有字段都是 public 的，可以被序列化
+    void testHostsAreNotSerialized() {
+        // hosts 只用于选连接地址，不能混进发给服务端的 auth 包
+        Auth auth = new Auth(1L, 0L, "buvid", "key");
+        String json = new com.google.gson.Gson().toJson(auth);
+
+        assertFalse(json.contains("hosts"));
+        assertTrue(json.contains("\"key\":\"key\""));
+    }
+
+    @Test
+    void testAuthFieldsArePublic() {        // 验证所有字段都是 public 的，可以被序列化
         Auth auth = new Auth(100L, 200L, "buvid", "key");
         
         // 直接访问字段应该不会抛出异常
